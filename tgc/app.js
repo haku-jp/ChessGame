@@ -117,7 +117,10 @@ function render() {
 
 function renderCollectionRate() {
   const ownedUnique = TGC_CARDS.filter((card) => isOwned(card.id)).length;
-  elements.collectionRate.textContent = `${ownedUnique} / ${TGC_CARDS.length}`;
+  elements.collectionRate.innerHTML = `
+    <span class="rate-label">所持率</span>
+    <strong>${ownedUnique} / ${TGC_CARDS.length}</strong>
+  `;
 }
 
 function renderFilters() {
@@ -281,7 +284,7 @@ function openPack() {
 function renderPackResult(card, duplicate) {
   elements.packStage.innerHTML = "";
   const result = document.createElement("div");
-  result.className = "pack-result";
+  result.className = `pack-result ${duplicate ? "is-duplicate" : "is-new"}`;
 
   const cardWrap = document.createElement("div");
   cardWrap.className = "revealed-card";
@@ -293,7 +296,7 @@ function renderPackResult(card, duplicate) {
   const message = document.createElement("div");
   message.className = "pack-message";
   message.innerHTML = `
-    <p class="kicker">${duplicate ? "Duplicate" : "New Card"}</p>
+    <p class="result-kicker">${duplicate ? "Duplicate" : "New Card"}</p>
     <h3>${escapeHtml(card.name)}</h3>
     <p>${duplicate ? "重複カードとして所持枚数が増えました。" : "新しいカードを図鑑に登録しました。"}</p>
   `;
