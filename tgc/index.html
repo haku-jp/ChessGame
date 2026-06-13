@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TGC - 幻獣カード図鑑プロトタイプ</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data/cards.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="title-block">
+          <p class="kicker">TGC Prototype</p>
+          <h1>幻獣図鑑</h1>
+        </div>
+        <div class="topbar-actions">
+          <div class="collection-rate" aria-live="polite">
+            <span class="rate-label">所持率</span>
+            <strong id="collectionRate">0 / 0</strong>
+          </div>
+          <button class="primary-button" id="openPackButton" type="button">パックを開ける</button>
+          <button class="ghost-button" id="resetButton" type="button">リセット</button>
+        </div>
+      </header>
+
+      <main class="library-layout">
+        <aside class="filter-panel" aria-label="カードタイプフィルタ">
+          <h2>カードタイプ</h2>
+          <div class="filter-list" id="filterList">
+            <button class="filter-button is-active" type="button" data-filter="all">すべて</button>
+            <button class="filter-button" type="button" data-filter="monster">幻獣</button>
+            <button class="filter-button" type="button" data-filter="aura">オーラ</button>
+            <button class="filter-button" type="button" data-filter="sorcery">ソーサリー</button>
+            <button class="filter-button" type="button" data-filter="item">アイテム</button>
+          </div>
+        </aside>
+
+        <section class="card-section" aria-label="カード一覧">
+          <div class="section-heading">
+            <h2>コレクション</h2>
+            <p id="visibleCount">0枚表示</p>
+          </div>
+          <div class="card-grid" id="cardGrid"></div>
+        </section>
+
+        <aside class="detail-panel" id="detailPanel" aria-live="polite"></aside>
+      </main>
+    </div>
+
+    <div class="modal" id="packModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="packModalTitle">
+      <div class="modal-backdrop" data-close-modal></div>
+      <div class="modal-card">
+        <div class="modal-header">
+          <p class="kicker">Arcane Pack</p>
+          <h2 id="packModalTitle">パック開封</h2>
+        </div>
+        <div class="pack-stage" id="packStage"></div>
+        <div class="modal-actions">
+          <button class="primary-button" id="openAnotherButton" type="button">もう一度開ける</button>
+          <button class="ghost-button" id="closeModalButton" type="button">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
