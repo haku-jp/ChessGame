@@ -113,6 +113,7 @@ function init() {
       showSelectedDetail();
     }
   });
+  window.addEventListener("resize", repositionFloatingUi);
   document.addEventListener("click", (e) => {
     if (!e.target.closest(".command-layer") && !e.target.closest(".unit-detail-card") && !e.target.closest(".cell")) {
       hideDetailCard();
@@ -375,13 +376,13 @@ function renderFloatingCommand(piece) {
     });
   });
 
-  positionFloatingEl(ui.commandLayer, cell, 194, 178);
+  positionFloatingEl(ui.commandLayer, cell, ...floatingSize("command"));
   ui.commandLayer.classList.remove("hidden");
 }
 
 function positionFloatingEl(el, anchor, width, height) {
   const rect = anchor.getBoundingClientRect();
-  const margin = 12;
+  const margin = window.innerWidth <= 620 ? 8 : 12;
   let left = rect.right - 8;
   let top = rect.top - 20;
   if (left + width > window.innerWidth - margin) left = rect.left - width + 8;
@@ -390,6 +391,20 @@ function positionFloatingEl(el, anchor, width, height) {
   if (left < margin) left = margin;
   el.style.left = `${left}px`;
   el.style.top = `${top}px`;
+}
+
+function floatingSize(type) {
+  const compact = window.innerWidth <= 620;
+  if (type === "detail") return compact ? [210, 142] : [220, 150];
+  return compact ? [158, 150] : [194, 178];
+}
+
+function repositionFloatingUi() {
+  const id = state.inspectedId || state.selectedId;
+  const piece = id ? state.pieces.get(id) : null;
+  if (!piece) return;
+  if (!ui.commandLayer?.classList.contains("hidden")) renderFloatingCommand(piece);
+  if (!ui.detailCard?.classList.contains("hidden")) showDetailCard(piece);
 }
 
 function clearPreview() {
@@ -446,7 +461,7 @@ function showDetailCard(piece) {
     <span>Traits: ${traits || "None"}</span>
     <p>${piece.ability?.desc ?? piece.desc ?? "No special skill."}</p>
   `;
-  positionFloatingEl(ui.detailCard, cell, 220, 150);
+  positionFloatingEl(ui.detailCard, cell, ...floatingSize("detail"));
   ui.detailCard.classList.remove("hidden");
 }
 
