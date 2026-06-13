@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spell Chess - Auto Tactics Prototype</title>
+  <link rel="stylesheet" href="style.css?v=board-command-ui-20260614" />
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="crest" aria-hidden="true">SC</div>
+        <div class="brand-text">
+          <span class="eyebrow">SPELL CHESS</span>
+          <h1 id="stageTitle">Stage 1</h1>
+          <p class="objective"><span class="obj-label">Objective</span> <span id="objectiveText">Eliminate all enemies</span></p>
+        </div>
+      </div>
+
+      <div class="hud">
+        <div class="hud-item">
+          <span class="hud-label">Round</span>
+          <strong id="roundText">1</strong>
+        </div>
+        <div class="hud-sep"></div>
+        <div class="hud-item">
+          <span class="hud-label">Phase</span>
+          <strong id="phaseText" class="phase">Player</strong>
+        </div>
+        <div class="hud-sep"></div>
+        <div class="hud-item">
+          <span class="hud-label">Command</span>
+          <strong id="commandText">3 / 3</strong>
+          <div class="command-pips" id="commandPips"></div>
+        </div>
+        <div class="hud-sep"></div>
+        <div class="hud-item">
+          <span class="hud-label">Soul</span>
+          <strong class="soul-val"><span id="soulText">0</span></strong>
+        </div>
+      </div>
+
+      <button id="endTurnBtn" class="primary-btn turn-btn" type="button">
+        Start Turn <kbd>Space</kbd>
+      </button>
+    </header>
+
+    <section class="stage">
+      <div class="board-area">
+        <div class="board-frame">
+          <div class="frame-corner tl"></div>
+          <div class="frame-corner tr"></div>
+          <div class="frame-corner bl"></div>
+          <div class="frame-corner br"></div>
+          <div class="board-grid-wrap">
+            <div class="rank-labels" id="rankLabels"></div>
+            <div id="board" class="board" aria-label="Battle board"></div>
+            <div class="file-labels" id="fileLabels"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="bottombar">
+      <div class="roster panel">
+        <span class="panel-title">Warband <span id="rosterCount" class="roster-count">(5/5)</span></span>
+        <div class="roster-units" id="rosterUnits"></div>
+      </div>
+      <div class="counts panel">
+        <span class="count count-light">Light <b id="lightCount">5</b></span>
+        <span class="count count-dark">Dark <b id="darkCount">4</b></span>
+      </div>
+      <div class="controls panel">
+        <div>Select a unit, choose doctrine, then start the turn.</div>
+        <div>Combat resolves automatically from your orders.</div>
+      </div>
+    </footer>
+
+    <div id="commandLayer" class="command-layer hidden"></div>
+    <div id="detailCard" class="unit-detail-card hidden"></div>
+    <div id="overlay" class="overlay hidden" aria-live="polite"></div>
+  </main>
+
+  <script type="module" src="src/main.js?v=board-command-ui-20260614"></script>
+</body>
+</html>
