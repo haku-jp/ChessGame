@@ -178,7 +178,7 @@ function renderDetails() {
         </dl>
         <div class="rules-box">
           <h3>説明</h3>
-          <p>${escapeHtml(card.description)}</p>
+          <p>${formatRulesText(card.description)}</p>
         </div>
         <blockquote>${escapeHtml(card.flavor)}</blockquote>
       </div>
@@ -228,7 +228,7 @@ function createCardElement(card, options) {
         </span>
       </span>
       <span class="type-ribbon">${escapeHtml(card.typeLabel)}</span>
-      <span class="card-text">${escapeHtml(card.description)}</span>
+      <span class="card-text">${formatRulesText(card.description)}</span>
       <span class="card-footer">
         ${statsMarkup}
       </span>
@@ -348,6 +348,15 @@ function getRarityLabel(rarity) {
     legendary: "レジェンダリー"
   };
   return labels[rarity] || rarity;
+}
+
+function formatRulesText(value) {
+  const keywords = ["飛行", "トランプル", "二段攻撃"];
+  let text = escapeHtml(value);
+  keywords.forEach((keyword) => {
+    text = text.replaceAll(keyword, `<span class="keyword">${keyword}</span>`);
+  });
+  return text;
 }
 
 function escapeHtml(value) {
