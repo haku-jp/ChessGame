@@ -11,7 +11,7 @@ const TGC_CARDS = [
     description: "この幻獣が戦場に出たとき、カードを1枚引く。",
     flavor: "小さなその瞳には、無限の可能性が宿っている。",
     evolutionTo: "korantan",
-    image: "assets/cards/koran.png",
+    image: "assets/cards/koran.jpg",
     visual: {
       icon: "◇",
       title: "白き幼体",
@@ -30,7 +30,7 @@ const TGC_CARDS = [
     description: "この幻獣が攻撃するたび、カードを1枚引く。",
     flavor: "月の導きのもと、力は覚醒し、意志は鋭く研がれる。",
     evolutionTo: "korangarth",
-    image: "assets/cards/korantan.png",
+    image: "assets/cards/korantan.jpg",
     visual: {
       icon: "◆",
       title: "月牙の狼",
@@ -49,7 +49,7 @@ const TGC_CARDS = [
     description: "飛行、トランプル。この幻獣が戦場に出たとき、すべての対戦相手はライフを2点失う。",
     flavor: "天と地をつなぐ咆哮が、世界に新たな秩序を刻む。",
     evolutionTo: "",
-    image: "assets/cards/korangarth.png",
+    image: "assets/cards/korangarth.jpg",
     visual: {
       icon: "✦",
       title: "蒼黒竜狼",
@@ -68,7 +68,7 @@ const TGC_CARDS = [
     description: "すべての味方クリーチャーは、ターン終了時まで +2/+2 の修整を受ける。",
     flavor: "天空より降り注ぐ祝福が、仲間たちに力を与える。",
     evolutionTo: "",
-    image: "assets/cards/light_aura.png",
+    image: "assets/cards/light_aura.jpg",
     visual: {
       icon: "☼",
       title: "天光の柱",
@@ -87,7 +87,7 @@ const TGC_CARDS = [
     description: "味方の幻獣1体は、ターン終了時まで飛行を得る。",
     flavor: "竜の力をその身に宿し、空を駆け抜ける。",
     evolutionTo: "",
-    image: "assets/cards/dragon_aura.png",
+    image: "assets/cards/dragon_aura.jpg",
     visual: {
       icon: "△",
       title: "竜翼の加護",
@@ -106,7 +106,7 @@ const TGC_CARDS = [
     description: "すべての敵に3点のダメージを与える。",
     flavor: "暗黒は静かに、だが確実に心を侵す。",
     evolutionTo: "",
-    image: "assets/cards/dark_aura.png",
+    image: "assets/cards/dark_aura.jpg",
     visual: {
       icon: "●",
       title: "侵食する影",
@@ -125,7 +125,7 @@ const TGC_CARDS = [
     description: "味方の幻獣1体は、ターン終了時まで二段攻撃を得る。",
     flavor: "燃える心が、すべての限界を超えさせる。",
     evolutionTo: "",
-    image: "assets/cards/flame_aura.png",
+    image: "assets/cards/flame_aura.jpg",
     visual: {
       icon: "▲",
       title: "燃える心火",
@@ -144,7 +144,7 @@ const TGC_CARDS = [
     description: "あなたの幻獣1体を選ぶ。その幻獣は次の進化に少し近づく。",
     flavor: "冷たい光を閉じこめた石は、幼い願いの輪郭を照らす。",
     evolutionTo: "",
-    image: "assets/cards/moon_crystal.png",
+    image: "assets/cards/moon_crystal.jpg",
     visual: {
       icon: "✧",
       title: "進化の欠片",

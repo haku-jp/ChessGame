@@ -4,7 +4,8 @@ const state = {
   owned: {},
   selectedCardId: "koran",
   filter: "all",
-  lastPackResult: null
+  lastPackResult: null,
+  recentlyAcquiredId: ""
 };
 
 const elements = {};
@@ -36,6 +37,7 @@ function bindEvents() {
     const button = event.target.closest("[data-filter]");
     if (!button) return;
     state.filter = button.dataset.filter;
+    syncSelectedCardToFilter();
     render();
   });
 
@@ -44,6 +46,7 @@ function bindEvents() {
     if (!cardButton) return;
     state.selectedCardId = cardButton.dataset.cardId;
     render();
+    scrollDetailsOnMobile();
   });
 
   elements.openPackButton.addEventListener("click", openPack);
@@ -98,6 +101,7 @@ function resetCollection() {
   };
   state.selectedCardId = "koran";
   state.lastPackResult = null;
+  state.recentlyAcquiredId = "";
   saveCollection();
   render();
 }
@@ -109,6 +113,7 @@ function ensureSelectedCard() {
 }
 
 function render() {
+  syncSelectedCardToFilter();
   renderCollectionRate();
   renderFilters();
   renderCardGrid();
@@ -138,6 +143,7 @@ function renderCardGrid() {
   visibleCards.forEach((card) => {
     fragment.appendChild(createCardElement(card, {
       selected: card.id === state.selectedCardId,
+      recent: card.id === state.recentlyAcquiredId,
       compact: false
     }));
   });
@@ -153,11 +159,20 @@ function renderDetails() {
   }
 
   const ownedCount = getOwnedCount(card.id);
-  const evolutionName = card.evolutionTo ? getCardById(card.evolutionTo)?.name || card.evolutionTo : "なし";
-  const stats = card.attack === null || card.health === null ? "なし" : `${card.attack} / ${card.health}`;
+  const isCardOwned = ownedCount > 0;
+  const evolutionName = isCardOwned
+    ? (card.evolutionTo ? getCardById(card.evolutionTo)?.name || card.evolutionTo : "なし")
+    : "未解析";
+  const stats = isCardOwned
+    ? (card.attack === null || card.health === null ? "なし" : `${card.attack} / ${card.health}`)
+    : "未解析";
+  const description = isCardOwned
+    ? formatRulesText(card.description)
+    : "このカードはまだ図鑑に完全登録されていません。パックから入手すると効果と物語が解放されます。";
+  const flavor = isCardOwned ? escapeHtml(card.flavor) : "未所持カードの記録は、召喚によって解き明かされる。";
 
   elements.detailPanel.innerHTML = `
-    <div class="detail-inner rarity-${escapeHtml(card.rarity)}">
+    <div class="detail-inner rarity-${escapeHtml(card.rarity)} ${isCardOwned ? "is-owned-detail" : "is-locked-detail"}">
       <div class="detail-card-preview" id="detailCardPreview"></div>
       <div class="detail-copy">
         <div class="detail-title-row">
@@ -177,10 +192,10 @@ function renderDetails() {
           <div><dt>所持状態</dt><dd>${ownedCount > 0 ? "所持中" : "未所持"}</dd></div>
         </dl>
         <div class="rules-box">
-          <h3>説明</h3>
-          <p>${formatRulesText(card.description)}</p>
+          <h3>${isCardOwned ? "説明" : "未解析"}</h3>
+          <p>${description}</p>
         </div>
-        <blockquote>${escapeHtml(card.flavor)}</blockquote>
+        <blockquote>${flavor}</blockquote>
       </div>
     </div>
   `;
@@ -196,6 +211,15 @@ function getVisibleCards() {
   return TGC_CARDS.filter((card) => card.type === state.filter);
 }
 
+function syncSelectedCardToFilter() {
+  const visibleCards = getVisibleCards();
+  if (!visibleCards.length) return;
+  const selectedIsVisible = visibleCards.some((card) => card.id === state.selectedCardId);
+  if (!selectedIsVisible) {
+    state.selectedCardId = visibleCards[0].id;
+  }
+}
+
 function createCardElement(card, options) {
   const ownedCount = getOwnedCount(card.id);
   const isCardOwned = ownedCount > 0;
@@ -208,16 +232,23 @@ function createCardElement(card, options) {
     `tone-${card.visual?.tone || "neutral"}`,
     isCardOwned ? "is-owned" : "is-locked",
     options.selected ? "is-selected" : "",
+    options.recent ? "is-recent" : "",
     options.compact ? "is-compact" : ""
   ].filter(Boolean).join(" ");
   button.setAttribute("aria-label", `${card.name}の詳細を見る`);
 
-  const statsMarkup = card.attack === null || card.health === null
+  const statsMarkup = !isCardOwned
+    ? `<span class="card-stat muted">未解析</span>`
+    : card.attack === null || card.health === null
     ? `<span class="card-stat muted">魔法</span>`
     : `<span class="card-stat attack">${escapeHtml(String(card.attack))}</span><span class="card-stat health">${escapeHtml(String(card.health))}</span>`;
+  const rulesText = isCardOwned ? formatRulesText(card.description) : "未入手。召喚で解放。";
+  const ownedBadge = isCardOwned ? `x${ownedCount}` : "未所持";
+  const recentBadge = options.recent ? `<span class="recent-badge">${state.lastPackResult?.duplicate ? "+1" : "NEW"}</span>` : "";
 
   button.innerHTML = `
     <span class="card-cost">${escapeHtml(String(card.cost))}</span>
+    ${recentBadge}
     <span class="card-frame">
       <span class="card-name">${escapeHtml(card.name)}</span>
       <span class="card-art">
@@ -228,11 +259,11 @@ function createCardElement(card, options) {
         </span>
       </span>
       <span class="type-ribbon">${escapeHtml(card.typeLabel)}</span>
-      <span class="card-text">${formatRulesText(card.description)}</span>
+      <span class="card-text">${rulesText}</span>
       <span class="card-footer">
         ${statsMarkup}
       </span>
-      <span class="owned-badge">${isCardOwned ? `x${ownedCount}` : "未所持"}</span>
+      <span class="owned-badge">${ownedBadge}</span>
     </span>
   `;
 
@@ -248,6 +279,8 @@ function attachCardImage(cardElement, card) {
   img.className = "card-image";
   img.alt = card.name;
   img.src = card.image;
+  img.loading = "lazy";
+  img.decoding = "async";
   img.addEventListener("error", () => {
     img.remove();
   }, { once: true });
@@ -269,7 +302,9 @@ function openPack() {
     const card = drawRandomCard();
     const duplicate = isOwned(card.id);
     state.owned[card.id] = getOwnedCount(card.id) + 1;
+    state.filter = card.type;
     state.selectedCardId = card.id;
+    state.recentlyAcquiredId = card.id;
     state.lastPackResult = {
       cardId: card.id,
       duplicate
@@ -308,6 +343,7 @@ function renderPackResult(card, duplicate) {
 function closePackModal() {
   elements.packModal.classList.remove("is-open");
   elements.packModal.setAttribute("aria-hidden", "true");
+  scrollSelectedCardIntoView();
 }
 
 function drawRandomCard() {
@@ -348,6 +384,28 @@ function getRarityLabel(rarity) {
     legendary: "レジェンダリー"
   };
   return labels[rarity] || rarity;
+}
+
+function scrollDetailsOnMobile() {
+  if (window.innerWidth > 760) return;
+  window.requestAnimationFrame(() => {
+    elements.detailPanel.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  });
+}
+
+function scrollSelectedCardIntoView() {
+  window.requestAnimationFrame(() => {
+    const selectedCard = elements.cardGrid.querySelector(".tgc-card.is-selected");
+    if (!selectedCard) return;
+    selectedCard.scrollIntoView({
+      behavior: "smooth",
+      block: window.innerWidth <= 760 ? "center" : "nearest",
+      inline: "nearest"
+    });
+  });
 }
 
 function formatRulesText(value) {
