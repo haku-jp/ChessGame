@@ -505,6 +505,49 @@ button {
   background: rgba(16, 11, 12, 0.62);
 }
 
+.recent-badge {
+  position: absolute;
+  z-index: 5;
+  top: 8px;
+  right: 8px;
+  padding: 4px 8px;
+  border: 1px solid #fff1a8;
+  border-radius: 999px;
+  color: #07070f;
+  font-family: "Cinzel", serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  background: linear-gradient(135deg, #fff4b8, #c9a84c);
+  box-shadow: 0 0 14px rgba(201, 168, 76, 0.66), 0 6px 16px rgba(0, 0, 0, 0.54);
+}
+
+.tgc-card.is-recent .card-frame {
+  animation: acquiredPulse 1.45s ease-in-out infinite;
+}
+
+.is-locked-detail .rules-box,
+.is-locked-detail blockquote {
+  border-color: rgba(136, 153, 170, 0.16);
+  color: #8899aa;
+  background: linear-gradient(180deg, rgba(15, 15, 30, 0.78), rgba(7, 7, 15, 0.8));
+}
+
+.is-locked-detail .rules-box p,
+.is-locked-detail blockquote {
+  filter: blur(0.2px);
+}
+
+@keyframes acquiredPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 20px var(--rarity-glow), 0 8px 32px rgba(0, 0, 0, 0.9);
+  }
+  50% {
+    box-shadow: 0 0 30px var(--rarity-glow), 0 0 18px rgba(201, 168, 76, 0.42), 0 8px 32px rgba(0, 0, 0, 0.9);
+  }
+}
+
 .rarity-common .card-frame {
   box-shadow: inset 0 0 0 2px rgba(238, 248, 255, 0.62), inset 0 0 0 7px rgba(37, 18, 8, 0.7), 0 18px 34px rgba(0, 0, 0, 0.42), 0 0 16px rgba(216, 228, 232, 0.24);
 }
