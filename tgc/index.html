@@ -2,131 +2,52 @@
 <html lang="ja">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>TGC - 幻獣召喚</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TGC - 幻獣カード図鑑プロトタイプ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="data/cards.js" defer></script>
     <script src="app.js" defer></script>
   </head>
   <body>
-    <div class="game-app">
-      <header class="player-status" aria-label="プレイヤーステータス">
-        <div class="player-plate">
-          <span class="avatar-sigil">T</span>
-          <div>
-            <p>召喚士</p>
-            <strong>ハク</strong>
-          </div>
-          <span class="level-badge">Lv.12</span>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="title-block">
+          <p class="kicker">ARCANE BESTIARY</p>
+          <h1>幻獣召喚</h1>
         </div>
-        <div class="resource-row">
-          <span class="resource-chip gold">12,400</span>
-          <span class="resource-chip gem">320</span>
-          <span class="resource-chip energy">7/10</span>
+        <div class="topbar-actions">
+          <div class="collection-rate" id="collectionRate" aria-live="polite">
+            <span class="rate-label">所持率</span>
+            <strong>0 / 0</strong>
+          </div>
+          <button class="primary-button" id="openPackButton" type="button">パックを開ける</button>
+          <button class="ghost-button" id="resetButton" type="button">リセット</button>
         </div>
       </header>
 
-      <main class="view-stack" id="viewStack">
-        <section class="game-view home-view is-active" id="homeView" data-view="home" aria-labelledby="homeTitle">
-          <div class="world-title">
-            <p class="kicker">Arcane Bestiary</p>
-            <h1 id="homeTitle">幻獣召喚</h1>
+      <main class="library-layout">
+        <aside class="filter-panel" aria-label="カードタイプフィルタ">
+          <h2>カードタイプ</h2>
+          <div class="filter-list" id="filterList">
+            <button class="filter-button is-active" type="button" data-filter="all">すべて</button>
+            <button class="filter-button" type="button" data-filter="monster">幻獣</button>
+            <button class="filter-button" type="button" data-filter="aura">オーラ</button>
+            <button class="filter-button" type="button" data-filter="sorcery">ソーサリー</button>
+            <button class="filter-button" type="button" data-filter="item">アイテム</button>
           </div>
+        </aside>
 
-          <div class="summon-altar">
-            <div class="magic-circle" aria-hidden="true">
-              <span></span>
-            </div>
-            <button class="summon-button" id="homeSummonButton" type="button">
-              <span>召喚する</span>
-              <small>魔導パックを開封</small>
-            </button>
-          </div>
-
-          <section class="featured-summon" aria-label="所持幻獣プレビュー">
-            <div class="carousel-shell" id="homeCarousel"></div>
-            <div class="carousel-actions">
-              <button class="round-button" id="prevCardButton" type="button" aria-label="前の幻獣">‹</button>
-              <p id="featuredMeta">0 / 0</p>
-              <button class="round-button" id="nextCardButton" type="button" aria-label="次の幻獣">›</button>
-            </div>
-          </section>
-        </section>
-
-        <section class="game-view summon-view" id="summonView" data-view="summon" aria-labelledby="summonTitle">
-          <div class="view-heading">
-            <p class="kicker">Gate of Obsidian</p>
-            <h2 id="summonTitle">召喚の祭壇</h2>
-          </div>
-          <div class="summon-gate">
-            <div class="gate-core"></div>
-            <button class="summon-button large" id="summonViewButton" type="button">
-              <span>パック開封</span>
-              <small>新たな幻獣を呼び出す</small>
-            </button>
-          </div>
-        </section>
-
-        <section class="game-view squad-view" id="squadView" data-view="squad" aria-labelledby="squadTitle">
-          <div class="view-heading">
-            <p class="kicker">Formation</p>
-            <h2 id="squadTitle">編成</h2>
-          </div>
-          <div class="coming-panel">
-            <strong>編成準備中</strong>
-            <p>所持幻獣から召喚陣へ配置する機能をここに追加します。</p>
-          </div>
-        </section>
-
-        <section class="game-view codex-view" id="codexView" data-view="codex" aria-labelledby="codexTitle">
-          <div class="codex-header">
-            <div>
-              <p class="kicker">Collection</p>
-              <h2 id="codexTitle">魔導図鑑</h2>
-            </div>
-            <div class="codex-tools">
-              <span class="collection-rate" aria-live="polite" id="collectionRate">0 / 0</span>
-              <button class="icon-button" id="filterToggleButton" type="button" aria-expanded="false" aria-controls="filterPanel">Filter</button>
-            </div>
-          </div>
-
-          <aside class="filter-panel" id="filterPanel" aria-label="カードタイプフィルタ">
-            <div class="filter-list" id="filterList">
-              <button class="filter-button is-active" type="button" data-filter="all">すべて</button>
-              <button class="filter-button" type="button" data-filter="monster">幻獣</button>
-              <button class="filter-button" type="button" data-filter="aura">オーラ</button>
-              <button class="filter-button" type="button" data-filter="sorcery">術式</button>
-              <button class="filter-button" type="button" data-filter="item">宝具</button>
-            </div>
-          </aside>
-
+        <section class="card-section" aria-label="カード一覧">
           <div class="section-heading">
+            <h2>コレクション</h2>
             <p id="visibleCount">0枚表示</p>
           </div>
           <div class="card-grid" id="cardGrid"></div>
         </section>
 
-        <section class="game-view shop-view" id="shopView" data-view="shop" aria-labelledby="shopTitle">
-          <div class="view-heading">
-            <p class="kicker">Mystic Shop</p>
-            <h2 id="shopTitle">ショップ</h2>
-          </div>
-          <div class="coming-panel">
-            <strong>商店準備中</strong>
-            <p>ジェム、召喚書、限定パックを扱う画面をここに追加します。</p>
-          </div>
-        </section>
+        <aside class="detail-panel" id="detailPanel" aria-live="polite"></aside>
       </main>
-
-      <nav class="bottom-nav" aria-label="メインナビゲーション">
-        <button class="nav-button is-active" type="button" data-view-target="home"><span>⌂</span>ホーム</button>
-        <button class="nav-button" type="button" data-view-target="summon"><span>✦</span>召喚</button>
-        <button class="nav-button" type="button" data-view-target="squad"><span>◆</span>編成</button>
-        <button class="nav-button" type="button" data-view-target="codex"><span>◇</span>図鑑</button>
-        <button class="nav-button" type="button" data-view-target="shop"><span>◈</span>ショップ</button>
-      </nav>
-
-      <button class="debug-button" id="resetButton" type="button">Reset</button>
     </div>
 
     <div class="modal" id="packModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="packModalTitle">
@@ -134,19 +55,14 @@
       <div class="modal-card">
         <div class="modal-header">
           <p class="kicker">Arcane Pack</p>
-          <h2 id="packModalTitle">召喚結果</h2>
+          <h2 id="packModalTitle">パック開封</h2>
         </div>
         <div class="pack-stage" id="packStage"></div>
         <div class="modal-actions">
-          <button class="primary-button" id="openAnotherButton" type="button">もう一度召喚</button>
+          <button class="primary-button" id="openAnotherButton" type="button">もう一度開ける</button>
           <button class="ghost-button" id="closeModalButton" type="button">閉じる</button>
         </div>
       </div>
-    </div>
-
-    <div class="modal detail-modal" id="cardDetailModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="cardDetailTitle">
-      <div class="modal-backdrop" data-close-detail></div>
-      <div class="modal-card detail-card-shell" id="detailPanel" aria-live="polite"></div>
     </div>
   </body>
 </html>
