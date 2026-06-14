@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="outer" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f4dd91"/>
+      <stop offset="0.18" stop-color="#5b4b22"/>
+      <stop offset="0.42" stop-color="#c9a84c"/>
+      <stop offset="0.72" stop-color="#1a1a2e"/>
+      <stop offset="1" stop-color="#f3d77d"/>
+    </linearGradient>
+    <linearGradient id="inner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a2844"/>
+      <stop offset="0.38" stop-color="#101020"/>
+      <stop offset="1" stop-color="#07070f"/>
+    </linearGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.09"/>
+      </feComponentTransfer>
+      <feBlend mode="screen" in2="SourceGraphic"/>
+    </filter>
+  </defs>
+  <rect x="3" y="3" width="394" height="554" rx="24" fill="url(#outer)"/>
+  <rect x="9" y="9" width="382" height="542" rx="19" fill="url(#inner)" stroke="#07070f" stroke-width="5" filter="url(#grain)"/>
+  <path d="M28 27h88l16 13h136l16-13h88v25H28z" fill="#111018" stroke="#c9a84c" stroke-width="1.4" opacity="0.95"/>
+  <path d="M23 335h354v156H23z" fill="#090912" stroke="#352b18" stroke-width="1.4" opacity="0.95"/>
+  <path d="M28 328h344M28 493h344" stroke="#c9a84c" stroke-width="1" opacity="0.36"/>
+  <path d="M22 22l28 0M22 22l0 28M378 22l-28 0M378 22l0 28M22 538l28 0M22 538l0-28M378 538l-28 0M378 538l0-28" fill="none" stroke="#f0d37a" stroke-width="3" opacity="0.86"/>
+</svg>

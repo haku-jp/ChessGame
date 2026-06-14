@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>TGC - 幻獣カード図鑑プロトタイプ</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=tgc-ux-art-20260614">
-    <script src="data/cards.js?v=tgc-ux-art-20260614" defer></script>
-    <script src="app.js?v=tgc-ux-art-20260614" defer></script>
+    <link rel="stylesheet" href="style.css?v=tgc-card-focus-20260614">
+    <script src="data/cards.js?v=tgc-card-focus-20260614" defer></script>
+    <script src="app.js?v=tgc-card-focus-20260614" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -21,7 +21,7 @@
             <span class="rate-label">所持率</span>
             <strong>0 / 0</strong>
           </div>
-          <button class="primary-button" id="openPackButton" type="button">パックを開ける</button>
+          <button class="primary-button" id="openPackButton" type="button">5枚パックを開ける</button>
           <button class="ghost-button" id="resetButton" type="button">リセット</button>
         </div>
       </header>
@@ -45,8 +45,6 @@
           </div>
           <div class="card-grid" id="cardGrid"></div>
         </section>
-
-        <aside class="detail-panel" id="detailPanel" aria-live="polite"></aside>
       </main>
     </div>
 
@@ -59,8 +57,22 @@
         </div>
         <div class="pack-stage" id="packStage"></div>
         <div class="modal-actions">
-          <button class="primary-button" id="openAnotherButton" type="button">もう一度開ける</button>
+          <button class="primary-button" id="openAnotherButton" type="button">もう一度5枚開ける</button>
           <button class="ghost-button" id="closeModalButton" type="button">閉じる</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal card-viewer-modal" id="cardViewerModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="cardViewerTitle">
+      <div class="modal-backdrop" data-close-viewer></div>
+      <div class="modal-card card-viewer-shell">
+        <div class="modal-header">
+          <p class="kicker">Card View</p>
+          <h2 id="cardViewerTitle">カード観察</h2>
+        </div>
+        <div class="card-viewer-stage" id="cardViewerStage"></div>
+        <div class="modal-actions">
+          <button class="ghost-button" id="closeViewerButton" type="button">閉じる</button>
         </div>
       </div>
     </div>

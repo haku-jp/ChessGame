@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 150" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#111122"/>
+      <stop offset="0.52" stop-color="#090913"/>
+      <stop offset="1" stop-color="#05050a"/>
+    </linearGradient>
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="11"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.075"/>
+      </feComponentTransfer>
+      <feBlend mode="screen" in2="SourceGraphic"/>
+    </filter>
+  </defs>
+  <rect x="0" y="0" width="400" height="150" fill="url(#panel)" filter="url(#noise)"/>
+  <path d="M0 1h400M0 149h400" stroke="#c9a84c" stroke-width="1" opacity="0.38"/>
+  <path d="M18 16h364M18 134h364" stroke="#ffffff" stroke-width="1" opacity="0.035"/>
+</svg>

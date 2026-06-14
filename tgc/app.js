@@ -20,7 +20,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function bindElements() {
   elements.cardGrid = document.getElementById("cardGrid");
-  elements.detailPanel = document.getElementById("detailPanel");
   elements.collectionRate = document.getElementById("collectionRate");
   elements.visibleCount = document.getElementById("visibleCount");
   elements.filterList = document.getElementById("filterList");
@@ -30,6 +29,9 @@ function bindElements() {
   elements.packStage = document.getElementById("packStage");
   elements.openAnotherButton = document.getElementById("openAnotherButton");
   elements.closeModalButton = document.getElementById("closeModalButton");
+  elements.cardViewerModal = document.getElementById("cardViewerModal");
+  elements.cardViewerStage = document.getElementById("cardViewerStage");
+  elements.closeViewerButton = document.getElementById("closeViewerButton");
 }
 
 function bindEvents() {
@@ -46,7 +48,7 @@ function bindEvents() {
     if (!cardButton) return;
     state.selectedCardId = cardButton.dataset.cardId;
     render();
-    scrollDetailsOnMobile();
+    openCardViewer(state.selectedCardId);
   });
 
   elements.openPackButton.addEventListener("click", openPack);
@@ -55,11 +57,18 @@ function bindEvents() {
   elements.packModal.addEventListener("click", (event) => {
     if (event.target.matches("[data-close-modal]")) closePackModal();
   });
+  elements.closeViewerButton.addEventListener("click", closeCardViewer);
+  elements.cardViewerModal.addEventListener("click", (event) => {
+    if (event.target.matches("[data-close-viewer]")) closeCardViewer();
+  });
   elements.resetButton.addEventListener("click", resetCollection);
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && elements.packModal.classList.contains("is-open")) {
       closePackModal();
+    }
+    if (event.key === "Escape" && elements.cardViewerModal.classList.contains("is-open")) {
+      closeCardViewer();
     }
   });
 }
@@ -117,7 +126,6 @@ function render() {
   renderCollectionRate();
   renderFilters();
   renderCardGrid();
-  renderDetails();
 }
 
 function renderCollectionRate() {
@@ -143,67 +151,12 @@ function renderCardGrid() {
   visibleCards.forEach((card) => {
     fragment.appendChild(createCardElement(card, {
       selected: card.id === state.selectedCardId,
-      recent: card.id === state.recentlyAcquiredId,
+      recent: isRecentCard(card.id),
       compact: false
     }));
   });
 
   elements.cardGrid.appendChild(fragment);
-}
-
-function renderDetails() {
-  const card = getCardById(state.selectedCardId) || getVisibleCards()[0] || TGC_CARDS[0];
-  if (!card) {
-    elements.detailPanel.innerHTML = "<p>カードがありません。</p>";
-    return;
-  }
-
-  const ownedCount = getOwnedCount(card.id);
-  const isCardOwned = ownedCount > 0;
-  const evolutionName = isCardOwned
-    ? (card.evolutionTo ? getCardById(card.evolutionTo)?.name || card.evolutionTo : "なし")
-    : "未解析";
-  const stats = isCardOwned
-    ? (card.attack === null || card.health === null ? "なし" : `${card.attack} / ${card.health}`)
-    : "未解析";
-  const description = isCardOwned
-    ? formatRulesText(card.description)
-    : "このカードはまだ図鑑に完全登録されていません。パックから入手すると効果と物語が解放されます。";
-  const flavor = isCardOwned ? escapeHtml(card.flavor) : "未所持カードの記録は、召喚によって解き明かされる。";
-
-  elements.detailPanel.innerHTML = `
-    <div class="detail-inner rarity-${escapeHtml(card.rarity)} ${isCardOwned ? "is-owned-detail" : "is-locked-detail"}">
-      <div class="detail-card-preview" id="detailCardPreview"></div>
-      <div class="detail-copy">
-        <div class="detail-title-row">
-          <div>
-            <p class="kicker">${escapeHtml(card.typeLabel)} / ${escapeHtml(getRarityLabel(card.rarity))}</p>
-            <h2>${escapeHtml(card.name)}</h2>
-          </div>
-          <span class="cost-gem" aria-label="コスト">${escapeHtml(String(card.cost))}</span>
-        </div>
-        <p class="status-pill ${ownedCount > 0 ? "owned" : "locked"}">${ownedCount > 0 ? `所持 ${ownedCount}枚` : "未所持"}</p>
-        <dl class="detail-list">
-          <div><dt>種類</dt><dd>${escapeHtml(card.typeLabel)}</dd></div>
-          <div><dt>レアリティ</dt><dd>${escapeHtml(getRarityLabel(card.rarity))}</dd></div>
-          <div><dt>コスト</dt><dd>${escapeHtml(String(card.cost))}</dd></div>
-          <div><dt>攻撃力 / 体力</dt><dd>${escapeHtml(stats)}</dd></div>
-          <div><dt>進化先</dt><dd>${escapeHtml(evolutionName)}</dd></div>
-          <div><dt>所持状態</dt><dd>${ownedCount > 0 ? "所持中" : "未所持"}</dd></div>
-        </dl>
-        <div class="rules-box">
-          <h3>${isCardOwned ? "説明" : "未解析"}</h3>
-          <p>${description}</p>
-        </div>
-        <blockquote>${flavor}</blockquote>
-      </div>
-    </div>
-  `;
-
-  elements.detailPanel.querySelector("#detailCardPreview").appendChild(createCardElement(card, {
-    selected: false,
-    compact: true
-  }));
 }
 
 function getVisibleCards() {
@@ -233,7 +186,8 @@ function createCardElement(card, options) {
     isCardOwned ? "is-owned" : "is-locked",
     options.selected ? "is-selected" : "",
     options.recent ? "is-recent" : "",
-    options.compact ? "is-compact" : ""
+    options.compact ? "is-compact" : "",
+    options.large ? "is-large" : ""
   ].filter(Boolean).join(" ");
   button.setAttribute("aria-label", `${card.name}の詳細を見る`);
 
@@ -244,7 +198,10 @@ function createCardElement(card, options) {
     : `<span class="card-stat attack">${escapeHtml(String(card.attack))}</span><span class="card-stat health">${escapeHtml(String(card.health))}</span>`;
   const rulesText = isCardOwned ? formatRulesText(card.description) : "未入手。召喚で解放。";
   const ownedBadge = isCardOwned ? `x${ownedCount}` : "未所持";
-  const recentBadge = options.recent ? `<span class="recent-badge">${state.lastPackResult?.duplicate ? "+1" : "NEW"}</span>` : "";
+  const recentCount = state.lastPackResult?.results?.filter((result) => result.cardId === card.id).length || 0;
+  const recentWasDuplicate = state.lastPackResult?.results?.some((result) => result.cardId === card.id && result.duplicate);
+  const recentLabel = options.recentLabel || (recentWasDuplicate ? `+${recentCount}` : "NEW");
+  const recentBadge = options.recent ? `<span class="recent-badge">${recentLabel}</span>` : "";
 
   button.innerHTML = `
     <span class="card-cost">${escapeHtml(String(card.cost))}</span>
@@ -259,7 +216,7 @@ function createCardElement(card, options) {
         </span>
       </span>
       <span class="type-ribbon">${escapeHtml(card.typeLabel)}</span>
-      <span class="card-text">${rulesText}</span>
+      <span class="card-text"><span class="rules-copy">${rulesText}</span></span>
       <span class="card-footer">
         ${statsMarkup}
       </span>
@@ -299,41 +256,56 @@ function openPack() {
   `;
 
   window.setTimeout(() => {
-    const card = drawRandomCard();
-    const duplicate = isOwned(card.id);
-    state.owned[card.id] = getOwnedCount(card.id) + 1;
-    state.filter = card.type;
-    state.selectedCardId = card.id;
-    state.recentlyAcquiredId = card.id;
+    const results = drawPack(5);
+    results.forEach((result) => {
+      state.owned[result.card.id] = getOwnedCount(result.card.id) + 1;
+    });
+    const focusResult = results.find((result) => !result.duplicate) || results[0];
+    state.filter = "all";
+    state.selectedCardId = focusResult.card.id;
+    state.recentlyAcquiredId = focusResult.card.id;
     state.lastPackResult = {
-      cardId: card.id,
-      duplicate
+      cardId: focusResult.card.id,
+      duplicate: focusResult.duplicate,
+      results: results.map((result) => ({
+        cardId: result.card.id,
+        duplicate: result.duplicate
+      }))
     };
     saveCollection();
     render();
-    renderPackResult(card, duplicate);
+    renderPackResult(results);
     elements.openAnotherButton.disabled = false;
   }, 850);
 }
 
-function renderPackResult(card, duplicate) {
+function renderPackResult(results) {
   elements.packStage.innerHTML = "";
+  const newCount = results.filter((result) => !result.duplicate).length;
   const result = document.createElement("div");
-  result.className = `pack-result ${duplicate ? "is-duplicate" : "is-new"}`;
+  result.className = `pack-result pack-result-five ${newCount > 0 ? "is-new" : "is-duplicate"}`;
 
   const cardWrap = document.createElement("div");
-  cardWrap.className = "revealed-card";
-  cardWrap.appendChild(createCardElement(card, {
-    selected: false,
-    compact: true
-  }));
+  cardWrap.className = "pack-card-row";
+  results.forEach((packResult, index) => {
+    const item = document.createElement("div");
+    item.className = "revealed-card pack-card-item";
+    item.style.setProperty("--reveal-index", String(index));
+    item.appendChild(createCardElement(packResult.card, {
+      selected: packResult.card.id === state.selectedCardId,
+      recent: true,
+      recentLabel: packResult.duplicate ? "+1" : "NEW",
+      compact: true
+    }));
+    cardWrap.appendChild(item);
+  });
 
   const message = document.createElement("div");
   message.className = "pack-message";
   message.innerHTML = `
-    <p class="result-kicker">${duplicate ? "Duplicate" : "New Card"}</p>
-    <h3>${escapeHtml(card.name)}</h3>
-    <p>${duplicate ? "重複カードとして所持枚数が増えました。" : "新しいカードを図鑑に登録しました。"}</p>
+    <p class="result-kicker">${newCount > 0 ? "New Summons" : "Duplicates"}</p>
+    <h3>5枚召喚</h3>
+    <p>${newCount > 0 ? `新規カード ${newCount} 枚を図鑑に登録しました。` : "すべて重複カードとして所持枚数が増えました。"}</p>
   `;
 
   result.append(cardWrap, message);
@@ -344,6 +316,27 @@ function closePackModal() {
   elements.packModal.classList.remove("is-open");
   elements.packModal.setAttribute("aria-hidden", "true");
   scrollSelectedCardIntoView();
+}
+
+function openCardViewer(cardId) {
+  const card = getCardById(cardId);
+  if (!card) return;
+
+  elements.cardViewerStage.innerHTML = "";
+  const viewerCard = createCardElement(card, {
+    selected: false,
+    recent: isRecentCard(card.id),
+    compact: true,
+    large: true
+  });
+  elements.cardViewerStage.appendChild(viewerCard);
+  elements.cardViewerModal.classList.add("is-open");
+  elements.cardViewerModal.setAttribute("aria-hidden", "false");
+}
+
+function closeCardViewer() {
+  elements.cardViewerModal.classList.remove("is-open");
+  elements.cardViewerModal.setAttribute("aria-hidden", "true");
 }
 
 function drawRandomCard() {
@@ -361,6 +354,19 @@ function drawRandomCard() {
   });
 
   return weightedPool[Math.floor(Math.random() * weightedPool.length)];
+}
+
+function drawPack(count) {
+  const temporaryOwned = { ...state.owned };
+  return Array.from({ length: count }, () => {
+    const card = drawRandomCard();
+    const duplicate = Number(temporaryOwned[card.id] || 0) > 0;
+    temporaryOwned[card.id] = Number(temporaryOwned[card.id] || 0) + 1;
+    return {
+      card,
+      duplicate
+    };
+  });
 }
 
 function getCardById(id) {
@@ -386,16 +392,6 @@ function getRarityLabel(rarity) {
   return labels[rarity] || rarity;
 }
 
-function scrollDetailsOnMobile() {
-  if (window.innerWidth > 760) return;
-  window.requestAnimationFrame(() => {
-    elements.detailPanel.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-  });
-}
-
 function scrollSelectedCardIntoView() {
   window.requestAnimationFrame(() => {
     const selectedCard = elements.cardGrid.querySelector(".tgc-card.is-selected");
@@ -406,6 +402,10 @@ function scrollSelectedCardIntoView() {
       inline: "nearest"
     });
   });
+}
+
+function isRecentCard(cardId) {
+  return state.lastPackResult?.results?.some((result) => result.cardId === cardId) || state.recentlyAcquiredId === cardId;
 }
 
 function formatRulesText(value) {
