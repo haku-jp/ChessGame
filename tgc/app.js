@@ -329,7 +329,9 @@ function openCardViewer(cardId) {
     compact: true,
     large: true
   });
-  elements.cardViewerStage.appendChild(viewerCard);
+  const viewerDetails = document.createElement("div");
+  viewerDetails.innerHTML = getViewerDetailsMarkup(card, isOwned(card.id));
+  elements.cardViewerStage.append(viewerCard, viewerDetails.firstElementChild);
   elements.cardViewerModal.classList.add("is-open");
   elements.cardViewerModal.setAttribute("aria-hidden", "false");
 }
@@ -406,6 +408,38 @@ function scrollSelectedCardIntoView() {
 
 function isRecentCard(cardId) {
   return state.lastPackResult?.results?.some((result) => result.cardId === cardId) || state.recentlyAcquiredId === cardId;
+}
+
+function getViewerDetailsMarkup(card, isCardOwned) {
+  const rulesText = isCardOwned ? formatRulesText(card.description) : "未入手。召喚で解放。";
+  const flavorText = isCardOwned ? escapeHtml(card.flavor || "記録なし。") : "まだ観察記録はありません。";
+  const statLabel = card.attack === null || card.health === null
+    ? "魔法"
+    : `${escapeHtml(String(card.attack))} / ${escapeHtml(String(card.health))}`;
+
+  return `
+    <section class="viewer-details" aria-label="${escapeHtml(card.name)}の説明">
+      <div class="viewer-detail-meta">
+        <span>${escapeHtml(card.typeLabel)}</span>
+        <span>${escapeHtml(getRarityLabel(card.rarity))}</span>
+        <span>コスト ${escapeHtml(String(card.cost))}</span>
+      </div>
+      <dl class="viewer-detail-list">
+        <div>
+          <dt>${card.attack === null || card.health === null ? "分類" : "攻撃 / 体力"}</dt>
+          <dd>${statLabel}</dd>
+        </div>
+      </dl>
+      <div class="viewer-rules">
+        <h3>能力</h3>
+        <p>${rulesText}</p>
+      </div>
+      <blockquote>
+        <strong>フレーバー</strong>
+        <span>${flavorText}</span>
+      </blockquote>
+    </section>
+  `;
 }
 
 function formatRulesText(value) {

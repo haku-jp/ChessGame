@@ -1311,7 +1311,7 @@ body::before {
   left: 8px;
   border-top: 2px solid var(--rarity-color);
   border-left: 2px solid var(--rarity-color);
-  box-shadow: 0 0 6px var(--rarity-color), 180px 132px 0 -2px #0a0a18, 180px 132px 0 0 var(--rarity-color);
+  box-shadow: 0 0 6px var(--rarity-color);
 }
 
 .card-art::after {
@@ -1319,7 +1319,7 @@ body::before {
   right: 8px;
   border-top: 2px solid var(--rarity-color);
   border-right: 2px solid var(--rarity-color);
-  box-shadow: 0 0 6px var(--rarity-color), -180px 132px 0 -2px #0a0a18, -180px 132px 0 0 var(--rarity-color);
+  box-shadow: 0 0 6px var(--rarity-color);
 }
 
 .fallback-art::before {
@@ -2622,6 +2622,11 @@ body {
   background: #07070f;
 }
 
+.card-art::before,
+.card-art::after {
+  display: none;
+}
+
 .card-image {
   object-fit: cover;
   object-position: center center;
@@ -2695,7 +2700,9 @@ body {
 
 .card-viewer-stage {
   display: grid;
-  place-items: center;
+  grid-template-columns: minmax(260px, 380px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
   padding: 10px 0 14px;
 }
 
@@ -2716,6 +2723,83 @@ body {
 
 .card-viewer-stage .card-text {
   font-size: 0.84rem;
+}
+
+.viewer-details {
+  display: grid;
+  gap: 12px;
+  color: #fff2d8;
+}
+
+.viewer-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.viewer-detail-meta span,
+.viewer-detail-list div {
+  border: 1px solid rgba(201, 168, 76, 0.24);
+  border-radius: 8px;
+  background: rgba(7, 7, 15, 0.46);
+}
+
+.viewer-detail-meta span {
+  padding: 5px 9px;
+  color: #e8c870;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.viewer-detail-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.viewer-detail-list div {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 10px;
+  padding: 9px 10px;
+}
+
+.viewer-detail-list dt {
+  color: #cbb98f;
+  font-size: 0.8rem;
+}
+
+.viewer-detail-list dd {
+  margin: 0;
+  font-weight: 900;
+}
+
+.viewer-rules,
+.viewer-details blockquote {
+  margin: 0;
+  border: 1px solid rgba(201, 168, 76, 0.24);
+  border-radius: 8px;
+  padding: 12px;
+  background: rgba(7, 7, 15, 0.5);
+}
+
+.viewer-rules h3,
+.viewer-details blockquote strong {
+  display: block;
+  margin: 0 0 7px;
+  color: #e8c870;
+  font-size: 0.92rem;
+}
+
+.viewer-rules p,
+.viewer-details blockquote span {
+  display: block;
+  margin: 0;
+  line-height: 1.7;
+}
+
+.viewer-details blockquote span {
+  color: #dac89f;
 }
 
 .pack-modal .modal-card,
@@ -2859,6 +2943,15 @@ body {
     width: min(340px, 84vw);
     height: min(620px, calc(100dvh - 170px));
     min-height: 520px;
+  }
+
+  .card-viewer-stage {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .viewer-details {
+    width: min(340px, 84vw);
   }
 
   .card-viewer-stage .card-frame {
