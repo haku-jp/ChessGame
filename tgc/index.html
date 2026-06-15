@@ -44,9 +44,58 @@
             <p id="visibleCount">0枚表示</p>
           </div>
           <div class="card-grid" id="cardGrid"></div>
+          <section class="battle-menu" id="battleMenu" aria-label="対戦メニュー">
+            <div>
+              <p class="kicker">Battle Menu</p>
+              <h2>召喚盤で対戦</h2>
+              <p>標準デッキで、カードを手札として構えながら盤上に幻獣を召喚します。</p>
+            </div>
+            <div class="battle-menu-actions">
+              <button class="primary-button" id="startBattleButton" type="button">標準デッキで開始</button>
+              <button class="ghost-button" id="previewBattleButton" type="button">戦闘画面を見る</button>
+            </div>
+          </section>
         </section>
       </main>
     </div>
+
+    <section class="battle-scene" id="battleScene" aria-hidden="true" aria-label="戦闘画面">
+      <div class="battle-shell">
+        <header class="battle-topbar">
+          <div>
+            <p class="kicker">Summon Board</p>
+            <h2>幻獣召喚戦</h2>
+          </div>
+          <div class="battle-hud">
+            <span id="battleTurnLabel">後手 Turn 1</span>
+            <span id="battleManaLabel">Mana 2/2</span>
+            <span id="battleLifeLabel">Life 20 - 20</span>
+          </div>
+          <div class="battle-actions">
+            <button class="ghost-button" id="backToCollectionButton" type="button">カード一覧</button>
+            <button class="primary-button" id="endBattleTurnButton" type="button">ターン終了</button>
+          </div>
+        </header>
+
+        <div class="battle-table">
+          <div class="opponent-hero">
+            <span>対戦相手</span>
+            <strong id="enemyLifeLabel">20</strong>
+          </div>
+          <div class="battle-board-wrap">
+            <div class="battle-board" id="battleBoard" aria-label="召喚盤"></div>
+          </div>
+          <div class="player-hero">
+            <span>あなた</span>
+            <strong id="playerLifeLabel">20</strong>
+          </div>
+        </div>
+
+        <div class="battle-hand-zone" aria-label="手札">
+          <div class="battle-hand" id="battleHand"></div>
+        </div>
+      </div>
+    </section>
 
     <div class="modal" id="packModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="packModalTitle">
       <div class="modal-backdrop" data-close-modal></div>
