@@ -86,7 +86,7 @@ function loadCollection() {
 
   state.owned = {
     koran: 1,
-    light_aura: 1
+    healing_sign: 1
   };
   saveCollection();
 }
@@ -106,7 +106,7 @@ function resetCollection() {
 
   state.owned = {
     koran: 1,
-    light_aura: 1
+    healing_sign: 1
   };
   state.selectedCardId = "koran";
   state.lastPackResult = null;
@@ -329,11 +329,67 @@ function openCardViewer(cardId) {
     compact: true,
     large: true
   });
-  const viewerDetails = document.createElement("div");
-  viewerDetails.innerHTML = getViewerDetailsMarkup(card, isOwned(card.id));
-  elements.cardViewerStage.append(viewerCard, viewerDetails.firstElementChild);
+  elements.cardViewerStage.appendChild(viewerCard);
+  elements.cardViewerStage.insertAdjacentHTML("beforeend", getViewerDetailsMarkup(card));
   elements.cardViewerModal.classList.add("is-open");
   elements.cardViewerModal.setAttribute("aria-hidden", "false");
+}
+
+function getViewerDetailsMarkup(card) {
+  const isCardOwned = isOwned(card.id);
+  const statsLabel = card.attack === null || card.health === null
+    ? "なし"
+    : `${escapeHtml(String(card.attack))} / ${escapeHtml(String(card.health))}`;
+  const movementLabel = card.movement
+    ? `${escapeHtml(card.movement.pattern)} / ${escapeHtml(String(card.movement.range))}`
+    : "なし";
+  const attackRangeLabel = card.attackRange
+    ? `${escapeHtml(card.attackRange.pattern)} / ${escapeHtml(String(card.attackRange.range))}`
+    : "なし";
+  const movementRows = isCardOwned && card.type === "genju"
+    ? `
+      <div>
+        <dt>移動</dt>
+        <dd>${movementLabel}</dd>
+      </div>
+      <div>
+        <dt>攻撃範囲</dt>
+        <dd>${attackRangeLabel}</dd>
+      </div>
+    `
+    : "";
+  const rulesText = isCardOwned ? formatRulesText(card.description) : "未入手。召喚で解放。";
+  const flavorText = isCardOwned ? escapeHtml(card.flavor) : "このカードを召喚で入手すると詳細が表示されます。";
+
+  return `
+    <div class="detail-copy ${isCardOwned ? "" : "is-locked-detail"}">
+      <div class="detail-title-row">
+        <h2>${escapeHtml(card.name)}</h2>
+        <span class="cost-gem">${escapeHtml(String(card.cost))}</span>
+      </div>
+      <span class="status-pill ${isCardOwned ? "owned" : "locked"}">${isCardOwned ? "所持中" : "未所持"}</span>
+      <dl class="detail-list">
+        <div>
+          <dt>種別</dt>
+          <dd>${escapeHtml(card.typeLabel)}</dd>
+        </div>
+        <div>
+          <dt>希少度</dt>
+          <dd>${escapeHtml(getRarityLabel(card.rarity))}</dd>
+        </div>
+        <div>
+          <dt>攻撃 / 体力</dt>
+          <dd>${statsLabel}</dd>
+        </div>
+        ${movementRows}
+      </dl>
+      <div class="rules-box">
+        <h3>効果</h3>
+        <p>${rulesText}</p>
+      </div>
+      <blockquote>${flavorText}</blockquote>
+    </div>
+  `;
 }
 
 function closeCardViewer() {
@@ -343,11 +399,10 @@ function closeCardViewer() {
 
 function drawRandomCard() {
   const rarityWeights = {
-    common: 48,
-    uncommon: 34,
-    rare: 14,
-    epic: 3,
-    legendary: 1
+    S: 56,
+    R: 30,
+    L: 11,
+    I: 3
   };
 
   const weightedPool = TGC_CARDS.flatMap((card) => {
@@ -384,14 +439,12 @@ function getOwnedCount(id) {
 }
 
 function getRarityLabel(rarity) {
-  const labels = {
-    common: "コモン",
-    uncommon: "アンコモン",
-    rare: "レア",
-    epic: "エピック",
-    legendary: "レジェンダリー"
-  };
-  return labels[rarity] || rarity;
+  return globalThis.TGC_RULES?.getRarityLabel?.(rarity) || {
+    S: "標準",
+    R: "希少",
+    L: "伝説",
+    I: "幻"
+  }[rarity] || rarity;
 }
 
 function scrollSelectedCardIntoView() {
@@ -410,40 +463,8 @@ function isRecentCard(cardId) {
   return state.lastPackResult?.results?.some((result) => result.cardId === cardId) || state.recentlyAcquiredId === cardId;
 }
 
-function getViewerDetailsMarkup(card, isCardOwned) {
-  const rulesText = isCardOwned ? formatRulesText(card.description) : "未入手。召喚で解放。";
-  const flavorText = isCardOwned ? escapeHtml(card.flavor || "記録なし。") : "まだ観察記録はありません。";
-  const statLabel = card.attack === null || card.health === null
-    ? "魔法"
-    : `${escapeHtml(String(card.attack))} / ${escapeHtml(String(card.health))}`;
-
-  return `
-    <section class="viewer-details" aria-label="${escapeHtml(card.name)}の説明">
-      <div class="viewer-detail-meta">
-        <span>${escapeHtml(card.typeLabel)}</span>
-        <span>${escapeHtml(getRarityLabel(card.rarity))}</span>
-        <span>コスト ${escapeHtml(String(card.cost))}</span>
-      </div>
-      <dl class="viewer-detail-list">
-        <div>
-          <dt>${card.attack === null || card.health === null ? "分類" : "攻撃 / 体力"}</dt>
-          <dd>${statLabel}</dd>
-        </div>
-      </dl>
-      <div class="viewer-rules">
-        <h3>能力</h3>
-        <p>${rulesText}</p>
-      </div>
-      <blockquote>
-        <strong>フレーバー</strong>
-        <span>${flavorText}</span>
-      </blockquote>
-    </section>
-  `;
-}
-
 function formatRulesText(value) {
-  const keywords = ["飛行", "トランプル", "二段攻撃"];
+  const keywords = ["飛行", "突撃", "跳躍", "守護", "調査", "射線無視"];
   let text = escapeHtml(value);
   keywords.forEach((keyword) => {
     text = text.replaceAll(keyword, `<span class="keyword">${keyword}</span>`);

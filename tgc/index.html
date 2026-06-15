@@ -7,7 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=tgc-card-focus-20260614">
     <script src="data/cards.js?v=tgc-card-focus-20260614" defer></script>
+    <script src="src/game/rules.js?v=genju-board-20260615" defer></script>
+    <script src="src/game/battle.js?v=genju-board-20260615" defer></script>
     <script src="app.js?v=tgc-card-focus-20260614" defer></script>
+    <script src="battle-demo.js?v=genju-board-20260615" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -31,10 +34,9 @@
           <h2>カードタイプ</h2>
           <div class="filter-list" id="filterList">
             <button class="filter-button is-active" type="button" data-filter="all">すべて</button>
-            <button class="filter-button" type="button" data-filter="monster">幻獣</button>
-            <button class="filter-button" type="button" data-filter="aura">オーラ</button>
-            <button class="filter-button" type="button" data-filter="sorcery">ソーサリー</button>
-            <button class="filter-button" type="button" data-filter="item">アイテム</button>
+            <button class="filter-button" type="button" data-filter="genju">幻獣</button>
+            <button class="filter-button" type="button" data-filter="spell">魔術</button>
+            <button class="filter-button" type="button" data-filter="equipment">装備</button>
           </div>
         </aside>
 
@@ -46,6 +48,31 @@
           <div class="card-grid" id="cardGrid"></div>
         </section>
       </main>
+
+      <section class="battle-demo" aria-label="召喚盤デモ">
+        <div class="battle-header">
+          <div>
+            <p class="kicker">Guild Trial Board</p>
+            <h2>6x6召喚盤</h2>
+          </div>
+          <div class="battle-actions">
+            <button class="primary-button" id="battleNewGameButton" type="button">標準デッキで開始</button>
+            <button class="ghost-button" id="battleEndTurnButton" type="button">ターン終了</button>
+          </div>
+        </div>
+
+        <div class="battle-status" id="battleStatus" aria-live="polite"></div>
+
+        <div class="battle-layout">
+          <div class="battle-board" id="battleBoard" aria-label="6x6召喚盤"></div>
+          <aside class="battle-side">
+            <h3>手札</h3>
+            <div class="battle-hand" id="battleHand"></div>
+            <h3>ログ</h3>
+            <ol class="battle-log" id="battleLog"></ol>
+          </aside>
+        </div>
+      </section>
     </div>
 
     <div class="modal" id="packModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="packModalTitle">
