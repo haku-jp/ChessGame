@@ -5,7 +5,8 @@ const state = {
   selectedCardId: "koran",
   filter: "all",
   lastPackResult: null,
-  recentlyAcquiredId: ""
+  recentlyAcquiredId: "",
+  view: "menu"
 };
 
 const elements = {};
@@ -19,6 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function bindElements() {
+  elements.mainMenu = document.getElementById("mainMenu");
+  elements.menuBattleButton = document.getElementById("menuBattleButton");
+  elements.menuCollectionButton = document.getElementById("menuCollectionButton");
+  elements.menuPackButton = document.getElementById("menuPackButton");
+  elements.appShell = document.querySelector(".app-shell");
+  elements.topbar = document.querySelector(".topbar");
+  elements.collectionScene = document.getElementById("collectionScene");
+  elements.battleScene = document.getElementById("battleScene");
   elements.cardGrid = document.getElementById("cardGrid");
   elements.collectionRate = document.getElementById("collectionRate");
   elements.visibleCount = document.getElementById("visibleCount");
@@ -35,6 +44,10 @@ function bindElements() {
 }
 
 function bindEvents() {
+  elements.menuBattleButton.addEventListener("click", showBattleScene);
+  elements.menuCollectionButton.addEventListener("click", showCollectionScene);
+  elements.menuPackButton.addEventListener("click", openPack);
+
   elements.filterList.addEventListener("click", (event) => {
     const button = event.target.closest("[data-filter]");
     if (!button) return;
@@ -69,6 +82,9 @@ function bindEvents() {
     }
     if (event.key === "Escape" && elements.cardViewerModal.classList.contains("is-open")) {
       closeCardViewer();
+    }
+    if (event.key === "Escape" && state.view !== "menu") {
+      showMainMenu();
     }
   });
 }
@@ -123,9 +139,37 @@ function ensureSelectedCard() {
 
 function render() {
   syncSelectedCardToFilter();
+  renderView();
   renderCollectionRate();
   renderFilters();
   renderCardGrid();
+}
+
+function renderView() {
+  const isMenu = state.view === "menu";
+  const isCollection = state.view === "collection";
+  const isBattle = state.view === "battle";
+  elements.mainMenu.hidden = !isMenu;
+  elements.appShell.hidden = isMenu;
+  elements.topbar.hidden = !isCollection;
+  elements.collectionScene.hidden = !isCollection;
+  elements.battleScene.hidden = !isBattle;
+}
+
+function showMainMenu() {
+  state.view = "menu";
+  render();
+}
+
+function showCollectionScene() {
+  state.view = "collection";
+  render();
+}
+
+function showBattleScene() {
+  state.view = "battle";
+  globalThis.startBattleDemo?.();
+  render();
 }
 
 function renderCollectionRate() {
