@@ -3019,39 +3019,102 @@ body {
   }
 }
 
-/* Battle menu and Hearthstone-style battle scene. */
-.battle-menu {
+/* Hearthstone-style top-level menu and dedicated battle scene. */
+.main-menu {
+  min-height: 100dvh;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 18px;
-  align-items: center;
-  margin-top: 30px;
-  padding: 18px;
-  border: 1px solid rgba(232, 200, 112, 0.34);
-  border-radius: 8px;
+  place-items: center;
+  padding: 20px;
   background:
-    linear-gradient(135deg, rgba(72, 158, 183, 0.18), transparent 36%),
-    linear-gradient(180deg, rgba(28, 22, 20, 0.94), rgba(7, 7, 15, 0.96));
-  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    radial-gradient(circle at 50% 18%, rgba(232, 200, 112, 0.17), transparent 22rem),
+    radial-gradient(circle at 18% 74%, rgba(74, 144, 217, 0.16), transparent 21rem),
+    linear-gradient(180deg, #151018 0%, #2b1712 48%, #080810 100%);
 }
 
-.battle-menu h2 {
-  margin: 0 0 6px;
-  color: #fff7d8;
-  font-size: 1.32rem;
+.main-menu[hidden] {
+  display: none;
 }
 
-.battle-menu p {
+.main-menu-shell {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.9fr) minmax(260px, 420px);
+  gap: 28px;
+  align-items: center;
+  width: min(980px, 100%);
+}
+
+.main-menu-brand {
+  padding: 26px;
+  border: 1px solid rgba(232, 200, 112, 0.24);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(15, 16, 25, 0.76), rgba(8, 8, 15, 0.84));
+  box-shadow: 0 20px 54px rgba(0, 0, 0, 0.58), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.main-menu-brand h1 {
+  margin: 0 0 10px;
+  color: transparent;
+  font-size: clamp(2.2rem, 7vw, 5rem);
+  line-height: 1;
+  background: linear-gradient(135deg, #c9a84c, #fff8e0, #c9a84c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.main-menu-brand p {
   margin: 0;
   color: #d8c79e;
   line-height: 1.65;
 }
 
-.battle-menu-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: flex-end;
+.main-menu-nav {
+  display: grid;
+  gap: 13px;
+}
+
+.menu-tile {
+  display: grid;
+  gap: 6px;
+  min-height: 92px;
+  border: 1px solid rgba(232, 200, 112, 0.32);
+  border-radius: 8px;
+  padding: 16px 18px;
+  color: #fff4d6;
+  cursor: pointer;
+  text-align: left;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 36%),
+    linear-gradient(180deg, rgba(35, 27, 24, 0.94), rgba(7, 7, 15, 0.96));
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.56);
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.menu-tile:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 232, 164, 0.75);
+  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.66), 0 0 24px rgba(232, 200, 112, 0.2);
+}
+
+.menu-tile-primary {
+  min-height: 118px;
+  border-color: rgba(255, 224, 145, 0.72);
+  background:
+    linear-gradient(135deg, rgba(255, 243, 189, 0.18), transparent 42%),
+    linear-gradient(180deg, #5a3417, #171018);
+}
+
+.menu-tile span {
+  color: #e8c870;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.menu-tile strong {
+  font-size: 1.34rem;
+  line-height: 1.12;
 }
 
 .battle-scene {
@@ -3399,13 +3462,21 @@ body {
 }
 
 @media (max-width: 760px) {
-  .battle-menu {
+.main-menu-shell {
     grid-template-columns: 1fr;
   }
 
-  .battle-menu-actions {
-    display: grid;
-    grid-template-columns: 1fr;
+  .main-menu-brand {
+    padding: 20px;
+  }
+
+  .main-menu-brand h1 {
+    font-size: 3.1rem;
+  }
+
+  .menu-tile,
+  .menu-tile-primary {
+    min-height: 82px;
   }
 
   .battle-shell {

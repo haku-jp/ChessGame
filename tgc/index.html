@@ -10,6 +10,30 @@
     <script src="app.js?v=tgc-card-focus-20260614" defer></script>
   </head>
   <body>
+    <section class="main-menu" id="mainMenu" aria-label="メインメニュー">
+      <div class="main-menu-shell">
+        <div class="main-menu-brand">
+          <p class="kicker">Arcane Bestiary</p>
+          <h1>幻獣召喚</h1>
+          <p>デッキを構え、召喚盤で戦い、カードを集める。</p>
+        </div>
+        <nav class="main-menu-nav" aria-label="ゲームモード">
+          <button class="menu-tile menu-tile-primary" id="menuBattleButton" type="button">
+            <span>対戦</span>
+            <strong>標準デッキで開始</strong>
+          </button>
+          <button class="menu-tile" id="menuCollectionButton" type="button">
+            <span>コレクション</span>
+            <strong>カード一覧</strong>
+          </button>
+          <button class="menu-tile" id="menuPackButton" type="button">
+            <span>パック</span>
+            <strong>5枚パックを開ける</strong>
+          </button>
+        </nav>
+      </div>
+    </section>
+
     <div class="app-shell">
       <header class="topbar">
         <div class="title-block">
@@ -22,6 +46,7 @@
             <strong>0 / 0</strong>
           </div>
           <button class="primary-button" id="openPackButton" type="button">5枚パックを開ける</button>
+          <button class="ghost-button" id="backToMenuFromCollectionButton" type="button">メニュー</button>
           <button class="ghost-button" id="resetButton" type="button">リセット</button>
         </div>
       </header>
@@ -44,17 +69,6 @@
             <p id="visibleCount">0枚表示</p>
           </div>
           <div class="card-grid" id="cardGrid"></div>
-          <section class="battle-menu" id="battleMenu" aria-label="対戦メニュー">
-            <div>
-              <p class="kicker">Battle Menu</p>
-              <h2>召喚盤で対戦</h2>
-              <p>標準デッキで、カードを手札として構えながら盤上に幻獣を召喚します。</p>
-            </div>
-            <div class="battle-menu-actions">
-              <button class="primary-button" id="startBattleButton" type="button">標準デッキで開始</button>
-              <button class="ghost-button" id="previewBattleButton" type="button">戦闘画面を見る</button>
-            </div>
-          </section>
         </section>
       </main>
     </div>
@@ -73,6 +87,7 @@
           </div>
           <div class="battle-actions">
             <button class="ghost-button" id="backToCollectionButton" type="button">カード一覧</button>
+            <button class="ghost-button" id="backToMenuFromBattleButton" type="button">メニュー</button>
             <button class="primary-button" id="endBattleTurnButton" type="button">ターン終了</button>
           </div>
         </header>

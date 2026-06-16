@@ -17,7 +17,7 @@ const state = {
   filter: "all",
   lastPackResult: null,
   recentlyAcquiredId: "",
-  view: "collection",
+  view: "menu",
   battle: createInitialBattleState()
 };
 
@@ -45,12 +45,15 @@ function bindElements() {
   elements.cardViewerModal = document.getElementById("cardViewerModal");
   elements.cardViewerStage = document.getElementById("cardViewerStage");
   elements.closeViewerButton = document.getElementById("closeViewerButton");
+  elements.mainMenu = document.getElementById("mainMenu");
+  elements.menuBattleButton = document.getElementById("menuBattleButton");
+  elements.menuCollectionButton = document.getElementById("menuCollectionButton");
+  elements.menuPackButton = document.getElementById("menuPackButton");
   elements.appShell = document.querySelector(".app-shell");
-  elements.battleMenu = document.getElementById("battleMenu");
   elements.battleScene = document.getElementById("battleScene");
-  elements.startBattleButton = document.getElementById("startBattleButton");
-  elements.previewBattleButton = document.getElementById("previewBattleButton");
+  elements.backToMenuFromCollectionButton = document.getElementById("backToMenuFromCollectionButton");
   elements.backToCollectionButton = document.getElementById("backToCollectionButton");
+  elements.backToMenuFromBattleButton = document.getElementById("backToMenuFromBattleButton");
   elements.endBattleTurnButton = document.getElementById("endBattleTurnButton");
   elements.battleBoard = document.getElementById("battleBoard");
   elements.battleHand = document.getElementById("battleHand");
@@ -89,9 +92,12 @@ function bindEvents() {
     if (event.target.matches("[data-close-viewer]")) closeCardViewer();
   });
   elements.resetButton.addEventListener("click", resetCollection);
-  elements.startBattleButton.addEventListener("click", startBattle);
-  elements.previewBattleButton.addEventListener("click", showBattleScene);
+  elements.menuBattleButton.addEventListener("click", startBattle);
+  elements.menuCollectionButton.addEventListener("click", showCollectionScene);
+  elements.menuPackButton.addEventListener("click", openPack);
+  elements.backToMenuFromCollectionButton.addEventListener("click", showMainMenu);
   elements.backToCollectionButton.addEventListener("click", showCollectionScene);
+  elements.backToMenuFromBattleButton.addEventListener("click", showMainMenu);
   elements.endBattleTurnButton.addEventListener("click", endBattleTurn);
 
   document.addEventListener("keydown", (event) => {
@@ -101,8 +107,8 @@ function bindEvents() {
     if (event.key === "Escape" && elements.cardViewerModal.classList.contains("is-open")) {
       closeCardViewer();
     }
-    if (event.key === "Escape" && state.view === "battle") {
-      showCollectionScene();
+    if (event.key === "Escape" && state.view !== "menu") {
+      showMainMenu();
     }
   });
 }
@@ -165,8 +171,11 @@ function render() {
 }
 
 function renderView() {
+  const isMenu = state.view === "menu";
+  const isCollection = state.view === "collection";
   const isBattle = state.view === "battle";
-  elements.appShell.hidden = isBattle;
+  elements.mainMenu.hidden = !isMenu;
+  elements.appShell.hidden = !isCollection;
   elements.battleScene.classList.toggle("is-open", isBattle);
   elements.battleScene.setAttribute("aria-hidden", String(!isBattle));
 }
@@ -310,6 +319,11 @@ function createInitialBattleState() {
 function startBattle() {
   state.battle = createInitialBattleState();
   showBattleScene();
+}
+
+function showMainMenu() {
+  state.view = "menu";
+  render();
 }
 
 function showBattleScene() {

@@ -12,7 +12,18 @@ function assert(condition, message) {
   }
 }
 
-assert(html.includes('id="battleMenu"'), "collection screen exposes a battle menu instead of an inline board");
+const collectionSectionStart = html.indexOf('class="card-section"');
+const battleSceneStart = html.indexOf('id="battleScene"');
+const cardSectionHtml = html.slice(collectionSectionStart, battleSceneStart);
+
+assert(html.includes('id="mainMenu"'), "top-level main menu exists");
+assert(html.includes('id="menuBattleButton"'), "main menu has a battle entry");
+assert(html.includes('id="menuCollectionButton"'), "main menu has a collection entry");
+assert(html.includes('id="menuPackButton"'), "main menu has a pack entry");
+assert(app.includes('view: "menu"'), "app starts on the main menu");
+assert(app.includes("showMainMenu"), "app can return to the main menu");
+assert(!cardSectionHtml.includes('id="battleMenu"'), "collection section must not contain a battle menu");
+assert(!cardSectionHtml.includes("標準デッキで開始"), "collection section must not contain battle start controls");
 assert(html.includes('id="battleScene"'), "battle scene container exists");
 assert(html.includes('id="battleBoard"'), "battle board is only inside the battle scene");
 assert(html.includes('id="battleHand"'), "battle hand container exists");
@@ -23,7 +34,7 @@ assert(app.includes("renderBattleHand"), "app renders a Hearthstone-style fanned
 assert(app.includes("showBattleScene"), "app can switch from collection to battle");
 assert(app.includes("showCollectionScene"), "app can return from battle to collection");
 
-assert(css.includes(".battle-menu"), "battle menu is styled");
+assert(css.includes(".main-menu"), "main menu is styled");
 assert(css.includes(".battle-scene"), "battle scene is styled");
 assert(css.includes(".battle-piece-portrait"), "piece portrait crop is styled");
 assert(css.includes(".battle-hand-card"), "fanned hand cards are styled");
